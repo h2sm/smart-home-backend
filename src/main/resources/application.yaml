@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    database: postgresql
+  datasource:
+    username: docker
+    password: docker
+    url: jdbc:postgresql://localhost:5432/SmarthomeDB
+server:
+  port: 8082
