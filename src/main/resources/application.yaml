@@ -10,5 +10,5 @@ server:
 
 h2sm:
   app:
-    jwtSecret: NOTOWARNOTOWARNOTOWAR
+    jwtSecret: NETVOYNENETVOYNENETVOYNENETVOYNENETVOYNENETVOYNE
     jwtExpirationMs: 86400000

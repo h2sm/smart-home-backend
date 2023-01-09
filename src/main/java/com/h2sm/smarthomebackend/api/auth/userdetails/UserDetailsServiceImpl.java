@@ -16,7 +16,7 @@ import java.util.Collections;
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private AuthRepository repository;
+    private final AuthRepository repository;
 
     @Override
     @Transactional

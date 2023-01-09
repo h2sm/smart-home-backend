@@ -13,11 +13,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private AuthProvider provider;
+    private final AuthProvider provider;
 
     public UsernamePasswordAuthenticationToken doLogin(AuthenticateDTO dto) {
 
         var auth = provider.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+
         SecurityContextHolder.getContext().setAuthentication(auth);
         return auth;
     }
