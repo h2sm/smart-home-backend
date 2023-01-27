@@ -3,6 +3,7 @@ package com.h2sm.smarthomebackend.api.auth.provider;
 import com.h2sm.smarthomebackend.api.auth.configuration.JWTUtils;
 import com.h2sm.smarthomebackend.api.entities.UserEntity;
 import com.h2sm.smarthomebackend.api.repository.AuthRepository;
+import com.h2sm.smarthomebackend.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -21,7 +22,7 @@ import java.util.Collections;
 public class AuthProvider implements AuthenticationProvider {
     public static final String INCORRECT_DATA = "Provided email or password is incorrect";
     public static final String USER_NOT_FOUND = "User not found";
-    private final AuthRepository authRepository;
+    private final UserRepository authRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtils jwtUtils;
 

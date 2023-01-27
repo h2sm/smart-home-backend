@@ -2,6 +2,7 @@ package com.h2sm.smarthomebackend.api.auth.userdetails;
 
 import com.h2sm.smarthomebackend.api.entities.UserEntity;
 import com.h2sm.smarthomebackend.api.repository.AuthRepository;
+import com.h2sm.smarthomebackend.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -16,7 +17,7 @@ import java.util.Collections;
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private final AuthRepository repository;
+    private final UserRepository repository;
 
     @Override
     @Transactional
