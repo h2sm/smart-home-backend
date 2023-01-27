@@ -17,7 +17,6 @@ public class HubEntity {
     @Column(name = "hub_id")
     private Long hubId;
     @OneToOne
-    @Column(name = "hub_owner")
     private UserEntity hubOwner;
     @Column(name = "global_hub_address")
     private String hubAddress;

@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/devices")
 @RequiredArgsConstructor
 public class DeviceController {
-    private DeviceServiceImpl service;
+
+    private final DeviceServiceImpl service;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ResponseEntity<?> getListOfDevices() {

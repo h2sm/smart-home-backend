@@ -33,6 +33,6 @@ public class JWTUtils {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return "Bearer " + compactTokenString;
+        return compactTokenString;
     }
 }

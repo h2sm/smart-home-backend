@@ -25,7 +25,8 @@ public class DeviceEntity {
     @Column(name = "local_ip_address")
     private String localIpAddress;
     @OneToOne
-    @Column(name = "hub_id")
+    private UserEntity deviceOwner;
+    @OneToOne
     private HubEntity connectedHub;
 
 }
