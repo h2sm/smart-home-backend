@@ -16,7 +16,8 @@ public class HubEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "hub_id")
     private Long hubId;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "hub_owner", referencedColumnName = "user_id")
     private UserEntity hubOwner;
     @Column(name = "global_hub_address")
     private String hubAddress;

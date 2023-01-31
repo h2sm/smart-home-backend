@@ -17,14 +17,22 @@ public class SharedDeviceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "share_id")
     private Long shareId;
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "device_owner", referencedColumnName = "user_id")
     private UserEntity deviceOwner;
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "allowed_user", referencedColumnName = "user_id")
     private UserEntity allowedUser;
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "shared_device", referencedColumnName = "device_id")
     private DeviceEntity sharedDevice;
+
     @Column(name = "sharing_date_from")
     private Date sharingDateFrom;
+
     @Column(name = "sharing_date_to")
     private Date sharingDateTo;
 }

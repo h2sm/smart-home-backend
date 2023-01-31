@@ -24,9 +24,11 @@ public class DeviceEntity {
     private String deviceSerial;
     @Column(name = "local_ip_address")
     private String localIpAddress;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "device_owner", referencedColumnName = "user_id")
     private UserEntity deviceOwner;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "hub_id", referencedColumnName = "hub_id")
     private HubEntity connectedHub;
 
 }
