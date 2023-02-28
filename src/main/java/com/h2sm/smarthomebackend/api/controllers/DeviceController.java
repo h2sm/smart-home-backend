@@ -1,10 +1,13 @@
 package com.h2sm.smarthomebackend.api.controllers;
 
+import com.h2sm.smarthomebackend.api.devices.DeviceDTO;
 import com.h2sm.smarthomebackend.api.service.impl.DeviceServiceImpl;
 import com.h2sm.smarthomebackend.dtos.DeviceSharingDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 
 @RestController
@@ -16,13 +19,26 @@ public class DeviceController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ResponseEntity<?> getListOfDevices() {
-        return ResponseEntity.ok(service.returnDevicesList());
+        var list = service.returnDevicesList();
+        var finalList = new ArrayList<DeviceDTO>();
+        list.forEach(device -> {
+            var dev = DeviceDTO.builder()
+                    .deviceLocation(device.getDeviceLocation())
+                    .deviceName(device.getDeviceName())
+                    .deviceSerial(device.getDeviceSerial())
+                    .id(device.getId())
+                    .localIpAddress(device.getLocalIpAddress())
+                    .build();
+            finalList.add(dev);
+        });
+
+        return ResponseEntity.ok(finalList);
     }
 
 
     @RequestMapping(value = "/{deviceId}/state", method = RequestMethod.PUT)
-    public ResponseEntity<?> switchDeviceState(@PathVariable Long deviceId, @RequestParam Boolean isOn) { // switch state of a device (on or off)
-        return ResponseEntity.ok(service.switchDeviceState(deviceId, isOn));
+    public ResponseEntity<?> switchDeviceState(@PathVariable String deviceId, @RequestBody Boolean isOn) { // switch state of a device (on or off)
+        return ResponseEntity.ok(service.switchDeviceState(Long.parseLong(deviceId), isOn));
     }
 
     @RequestMapping(value = "/{deviceId}/state", method = RequestMethod.GET)

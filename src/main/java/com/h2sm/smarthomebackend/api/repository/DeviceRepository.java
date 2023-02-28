@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface DeviceRepository extends JpaRepository<DeviceEntity, Long> {
-    List getDeviceEntitiesByDeviceOwnerUserLoginEquals(String deviceOwnerLogin);
+    List<DeviceEntity> getDeviceEntitiesByDeviceOwnerUserLoginEquals(String deviceOwnerLogin);
+    DeviceEntity getDeviceEntityByIdEquals(Long id);
+    DeviceEntity getDeviceEntityById(Long id);
 }

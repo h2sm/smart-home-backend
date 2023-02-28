@@ -65,11 +65,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader(HttpHeaders.AUTHORIZATION);
-
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(TOKEN_PREFIX)) {
             return headerAuth.substring(7);
         }
-        logger.error("Cannot parse JWT");
+        logger.error("Cannot parse JWT:" + headerAuth);
         return null;
     }
 
