@@ -7,6 +7,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/SmarthomeDB
 server:
   port: 8082
+  ssl:
+    key-alias: smarthouse
+    key-store-password: passwd
+    key-store: classpath:h2sm.p12
+    key-store-type: PKCS12
+    enabled: true
 
 h2sm:
   app:

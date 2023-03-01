@@ -26,7 +26,7 @@ public class SSLSocketListener {
             while (true) {
                 // blocks the program when no socket floats in
                 sslsocket = (SSLSocket) sslserversocket.accept();
-                System.out.println("sslsocket:" + sslsocket);
+                System.out.println("New sslsocket found:" + sslsocket);
                 // assign a handler to process data
                 new SocketHandler(sslsocket);
             }
