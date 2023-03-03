@@ -12,7 +12,7 @@
         <profile>
             <id>prod</id>
             <properties>
-                <jdbc.url>jdbc:postgresql://127.0.0.1:5432/SmarthomeDB</jdbc.url>
+                <jdbc.url>jdbc:postgresql://172.17.0.:5432/SmarthomeDB</jdbc.url>
             </properties>
             <activation>
                 <activeByDefault>false</activeByDefault>
