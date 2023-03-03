@@ -8,6 +8,33 @@
         <version>2.7.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+    <profiles>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <jdbc.url>jdbc:postgresql://127.0.0.1:5432/SmarthomeDB</jdbc.url>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+        </profile>
+        <profile>
+            <id>local</id>
+            <properties>
+                <jdbc.url>jdbc:postgresql://localhost:5432/SmarthomeDB</jdbc.url>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <os>
+                    <family>macos</family>
+                    <!--                    маководам привет остальным соболезную-->
+                </os>
+            </activation>
+        </profile>
+    </profiles>
     <groupId>com.h2sm</groupId>
     <artifactId>smart-home-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -72,10 +99,16 @@
         </dependency>
 
 
-
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -88,6 +121,11 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
             </plugin>
         </plugins>
     </build>
