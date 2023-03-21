@@ -7,4 +7,6 @@ import org.springframework.stereotype.Controller;
 @AllArgsConstructor
 public class HubController {
 
+
+
 }
