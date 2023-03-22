@@ -7,6 +7,7 @@ import com.h2sm.smarthomebackend.api.service.DeviceService;
 import com.h2sm.smarthomebackend.api.service.entityToDTO.impl.DeviceInformationChanger;
 import com.h2sm.smarthomebackend.dtos.DeviceInformationDTO;
 import com.h2sm.smarthomebackend.dtos.DeviceSharingDTO;
+import com.h2sm.smarthomebackend.netty.ServerHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +32,11 @@ public class DeviceServiceImpl implements DeviceService {
     @Transactional
     public boolean switchDeviceState(Long deviceId, boolean isOn) {
         var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
-        var hubAddress = deviceEntity.getConnectedHub().getHubAddress();
-        System.out.println(deviceId + " is " + isOn);
-        return false;
+        var hubAddress = deviceEntity.getConnectedHub().getHubAuthId();
+        var channel = ServerHandler.getChannelsMap().get(hubAddress);
+        var state = isOn ? "TURN_ON" : "TURN_OFF";
+        channel.writeAndFlush(state+":"+deviceEntity.getLocalIpAddress());
+        return true;
     }
 
     @Override

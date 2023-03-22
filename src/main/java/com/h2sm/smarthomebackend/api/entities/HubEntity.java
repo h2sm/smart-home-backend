@@ -23,4 +23,6 @@ public class HubEntity {
     private String hubAddress;
     @Column(name = "hub_name")
     private String hubName;
+    @Column(name = "hub_auth_id")
+    private String hubAuthId;
 }
