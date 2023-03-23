@@ -2,6 +2,7 @@ package com.h2sm.smarthomebackend.api.controllers;
 
 import com.h2sm.smarthomebackend.api.devices.DeviceDTO;
 import com.h2sm.smarthomebackend.api.service.impl.DeviceServiceImpl;
+import com.h2sm.smarthomebackend.dtos.ChangeColorDTO;
 import com.h2sm.smarthomebackend.dtos.DeviceSharingDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +55,11 @@ public class DeviceController {
     @RequestMapping(value = "/access", method = RequestMethod.POST)
     public ResponseEntity<?> shareDeviceControl(@RequestBody DeviceSharingDTO dto) {
         return ResponseEntity.ok(service.shareDeviceControl(dto));
+    }
+
+    @RequestMapping(value = "/{deviceId}/color")
+    public ResponseEntity<?> changeColor(@PathVariable Long deviceId, @RequestBody ChangeColorDTO dto){
+        return ResponseEntity.ok(service.changeColor(deviceId, dto));
     }
 
 }

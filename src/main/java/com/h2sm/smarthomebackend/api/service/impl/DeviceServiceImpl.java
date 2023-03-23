@@ -5,6 +5,7 @@ import com.h2sm.smarthomebackend.api.entities.DeviceEntity;
 import com.h2sm.smarthomebackend.api.repository.DeviceRepository;
 import com.h2sm.smarthomebackend.api.service.DeviceService;
 import com.h2sm.smarthomebackend.api.service.entityToDTO.impl.DeviceInformationChanger;
+import com.h2sm.smarthomebackend.dtos.ChangeColorDTO;
 import com.h2sm.smarthomebackend.dtos.DeviceInformationDTO;
 import com.h2sm.smarthomebackend.dtos.DeviceSharingDTO;
 import com.h2sm.smarthomebackend.netty.ServerHandler;
@@ -20,6 +21,7 @@ import java.util.List;
 public class DeviceServiceImpl implements DeviceService {
     private final DeviceRepository deviceRepository;
     private final DeviceInformationChanger deviceInformationChanger;
+
     @Override
     @Transactional
     public List<DeviceEntity> returnDevicesList() {
@@ -35,7 +37,7 @@ public class DeviceServiceImpl implements DeviceService {
         var hubAddress = deviceEntity.getConnectedHub().getHubAuthId();
         var channel = ServerHandler.getChannelsMap().get(hubAddress);
         var state = isOn ? "TURN_ON" : "TURN_OFF";
-        channel.writeAndFlush(state+":"+deviceEntity.getLocalIpAddress());
+        channel.writeAndFlush(state + ":" + deviceEntity.getLocalIpAddress());
         return true;
     }
 
@@ -52,5 +54,18 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public boolean shareDeviceControl(DeviceSharingDTO dto) {
         return false;
+    }
+
+    public boolean changeColor(Long deviceId, ChangeColorDTO dto) {
+        var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
+        var hubAddress = deviceEntity.getConnectedHub().getHubAuthId();
+        var channel = ServerHandler.getChannelsMap().get(hubAddress);
+        channel.writeAndFlush("CHANGE_COLOR:"
+                + deviceEntity.getLocalIpAddress() + ":"
+                + dto.getBrightness() + ":"
+                + dto.getRed() + ":"
+                + dto.getGreen() + ":"
+                + dto.getBlue());
+        return true;
     }
 }

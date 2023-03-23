@@ -32,5 +32,4 @@ public class DeviceEntity {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hub_id", referencedColumnName = "hub_id")
     private HubEntity connectedHub;
-
 }
