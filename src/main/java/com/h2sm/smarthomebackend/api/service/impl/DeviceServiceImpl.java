@@ -8,7 +8,6 @@ import com.h2sm.smarthomebackend.api.service.entityToDTO.impl.DeviceInformationC
 import com.h2sm.smarthomebackend.dtos.ChangeColorDTO;
 import com.h2sm.smarthomebackend.dtos.DeviceInformationDTO;
 import com.h2sm.smarthomebackend.dtos.DeviceSharingDTO;
-import com.h2sm.smarthomebackend.netty.ServerHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +34,9 @@ public class DeviceServiceImpl implements DeviceService {
     public boolean switchDeviceState(Long deviceId, boolean isOn) {
         var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
         var hubAddress = deviceEntity.getConnectedHub().getHubAuthId();
-        var channel = ServerHandler.getChannelsMap().get(hubAddress);
+       // var channel = ServerHandler.getChannelsMap().get(hubAddress);
         var state = isOn ? "TURN_ON" : "TURN_OFF";
-        channel.writeAndFlush(state + ":" + deviceEntity.getLocalIpAddress());
+        //channel.writeAndFlush(state + ":" + deviceEntity.getLocalIpAddress());
         return true;
     }
 
@@ -59,13 +58,13 @@ public class DeviceServiceImpl implements DeviceService {
     public boolean changeColor(Long deviceId, ChangeColorDTO dto) {
         var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
         var hubAddress = deviceEntity.getConnectedHub().getHubAuthId();
-        var channel = ServerHandler.getChannelsMap().get(hubAddress);
-        channel.writeAndFlush("CHANGE_COLOR:"
-                + deviceEntity.getLocalIpAddress() + ":"
-                + dto.getBrightness() + ":"
-                + dto.getRed() + ":"
-                + dto.getGreen() + ":"
-                + dto.getBlue());
+//        var channel = ServerHandler.getChannelsMap().get(hubAddress);
+//        channel.writeAndFlush("CHANGE_COLOR:"
+//                + deviceEntity.getLocalIpAddress() + ":"
+//                + dto.getBrightness() + ":"
+//                + dto.getRed() + ":"
+//                + dto.getGreen() + ":"
+//                + dto.getBlue());
         return true;
     }
 }

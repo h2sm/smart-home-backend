@@ -23,6 +23,12 @@ public class AuthServiceImpl implements AuthService {
         return auth;
     }
 
+    public UsernamePasswordAuthenticationToken doLoginHub(AuthenticateDTO dto){
+        var auth = provider.authenticateHub(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        return auth;
+    }
+
     @Override
     public UsernamePasswordAuthenticationToken doRegister(RegistrationDTO dto) {
         return null;

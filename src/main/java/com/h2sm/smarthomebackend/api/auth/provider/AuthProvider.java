@@ -38,6 +38,17 @@ public class AuthProvider implements AuthenticationProvider {
         return new UsernamePasswordAuthenticationToken(userEntity, jwt, Collections.singleton(new SimpleGrantedAuthority("User")));
     }
 
+    public UsernamePasswordAuthenticationToken authenticateHub(Authentication authentication){
+        String email = authentication.getName();
+        String password = authentication.getCredentials().toString();
+        var userEntity = authRepository.getUserEntityByUserLogin(email);
+        checkLoginCredentials(userEntity, password);
+        var jwt = jwtUtils.createJWT(userEntity);
+
+        return new UsernamePasswordAuthenticationToken(userEntity, jwt, Collections.singleton(new SimpleGrantedAuthority("User")));
+
+    }
+
     @Override
     public boolean supports(Class<?> authentication) {
         return false;
