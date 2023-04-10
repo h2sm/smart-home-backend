@@ -1,6 +1,8 @@
 package com.h2sm.smarthomebackend.api.sockets.pojo;
 
-public class HelloMessage {
+import java.io.Serializable;
+
+public class HelloMessage implements Serializable {
 
     private String name;
 

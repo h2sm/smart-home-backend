@@ -1,13 +1,18 @@
 package com.h2sm.smarthomebackend.api.sockets.pojo;
 
-public class Greeting {
-    private String content;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.Serializable;
+
+public class Greeting implements Serializable {
+    @JsonProperty
+    private String name;
 
     public Greeting(String content) {
-        this.content = content;
+        this.name = content;
     }
 
     public String getContent() {
-        return content;
+        return name;
     }
 }

@@ -1,21 +1,81 @@
 package com.h2sm.smarthomebackend.api.auth.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.messaging.converter.DefaultContentTypeResolver;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
-//@Configuration
-//@EnableWebSocketMessageBroker
-//@EnableWebSocket
-public class WebSocketConfig {}//implements WebSocketMessageBrokerConfigurer {
-//    @Override
-//    public void configureMessageBroker(MessageBrokerRegistry config) {
-//        config.enableSimpleBroker("/topic");
-//        config.setApplicationDestinationPrefixes("/app");
-//    }
-//
-//    @Override
-//    public void registerStompEndpoints(StompEndpointRegistry registry) {
-//        //registry.addEndpoint("/hello").withSockJS();
-//    }
-//}
+import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Map;
+
+@Configuration
+@EnableWebSocketMessageBroker
+@EnableWebSocket
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/queue");
+        config.setApplicationDestinationPrefixes("/app");
+    }
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/hello").setHandshakeHandler(new DefaultHandshakeHandler() {
+
+            public boolean beforeHandshake(
+                    ServerHttpRequest request,
+                    ServerHttpResponse response,
+                    WebSocketHandler wsHandler,
+                    Map attributes) throws Exception {
+
+                if (request instanceof ServletServerHttpRequest) {
+                    ServletServerHttpRequest servletRequest
+                            = (ServletServerHttpRequest) request;
+                    HttpSession session = servletRequest
+                            .getServletRequest().getSession();
+                    attributes.put("sessionId", session.getId());
+                }
+                return true;
+            }
+        });
+        registry.addEndpoint("/hello").setHandshakeHandler(new DefaultHandshakeHandler() {
+
+            public boolean beforeHandshake(
+                    ServerHttpRequest request,
+                    ServerHttpResponse response,
+                    WebSocketHandler wsHandler,
+                    Map attributes) throws Exception {
+
+                if (request instanceof ServletServerHttpRequest) {
+                    ServletServerHttpRequest servletRequest
+                            = (ServletServerHttpRequest) request;
+                    HttpSession session = servletRequest
+                            .getServletRequest().getSession();
+                    attributes.put("sessionId", session.getId());
+                }
+                return true;
+            }
+        }).withSockJS();
+    }
+
+    @Override
+    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
+        DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
+        resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        converter.setObjectMapper(new ObjectMapper());
+        converter.setContentTypeResolver(resolver);
+        messageConverters.add(converter);
+        return false;
+    }
+}

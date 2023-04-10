@@ -13,7 +13,6 @@ server:
 #    key-store: classpath:h2sm.p12
 #    key-store-type: PKCS12
 #    enabled: true
-
 h2sm:
   app:
     jwtSecret: NETVOYNENETVOYNENETVOYNENETVOYNENETVOYNENETVOYNE
