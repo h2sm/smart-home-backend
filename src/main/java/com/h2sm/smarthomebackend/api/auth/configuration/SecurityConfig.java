@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,14 +38,14 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
-                .antMatchers("/app/hello").anonymous()
-                .antMatchers("/app/**").anonymous()
-                .antMatchers("/hello/**").anonymous()
-                .antMatchers("/queue/**").anonymous()
-                .antMatchers("/hi/**").anonymous()
-                .anyRequest().authenticated();
+                .antMatchers("/hello/*").authenticated();
+//                .antMatchers("/app/**").anonymous()
+//                .antMatchers("/hello/**").anonymous()
+//                .antMatchers("/queue/**").anonymous()
+//                .antMatchers("/hi/**").anonymous()
+                //.anyRequest().anonymous();
 
-        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

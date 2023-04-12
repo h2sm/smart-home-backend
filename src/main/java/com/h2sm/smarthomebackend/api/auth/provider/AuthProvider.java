@@ -2,7 +2,7 @@ package com.h2sm.smarthomebackend.api.auth.provider;
 
 import com.h2sm.smarthomebackend.api.auth.configuration.JWTUtils;
 import com.h2sm.smarthomebackend.api.entities.UserEntity;
-import com.h2sm.smarthomebackend.api.repository.AuthRepository;
+import com.h2sm.smarthomebackend.api.repository.HubRepository;
 import com.h2sm.smarthomebackend.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +23,7 @@ public class AuthProvider implements AuthenticationProvider {
     public static final String INCORRECT_DATA = "Provided email or password is incorrect";
     public static final String USER_NOT_FOUND = "User not found";
     private final UserRepository authRepository;
+    private final HubRepository hubRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtils jwtUtils;
 
@@ -32,17 +33,17 @@ public class AuthProvider implements AuthenticationProvider {
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
         var userEntity = authRepository.getUserEntityByUserLogin(email);
-        checkLoginCredentials(userEntity, password);
+        //checkLoginCredentials(userEntity, password);
         var jwt = jwtUtils.createJWT(userEntity);
 
         return new UsernamePasswordAuthenticationToken(userEntity, jwt, Collections.singleton(new SimpleGrantedAuthority("User")));
     }
 
     public UsernamePasswordAuthenticationToken authenticateHub(Authentication authentication){
-        String email = authentication.getName();
-        String password = authentication.getCredentials().toString();
-        var userEntity = authRepository.getUserEntityByUserLogin(email);
-        checkLoginCredentials(userEntity, password);
+        String hubAuthId = authentication.getName();
+        //String password = authentication.getCredentials().toString();
+        var userEntity = hubRepository.findHubEntityByHubAuthIdEquals(authentication.getName());
+        //checkLoginCredentials(userEntity, password);
         var jwt = jwtUtils.createJWT(userEntity);
 
         return new UsernamePasswordAuthenticationToken(userEntity, jwt, Collections.singleton(new SimpleGrantedAuthority("User")));

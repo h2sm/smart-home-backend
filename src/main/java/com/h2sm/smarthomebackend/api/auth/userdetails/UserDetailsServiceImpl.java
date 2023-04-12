@@ -2,6 +2,7 @@ package com.h2sm.smarthomebackend.api.auth.userdetails;
 
 import com.h2sm.smarthomebackend.api.entities.UserEntity;
 import com.h2sm.smarthomebackend.api.repository.AuthRepository;
+import com.h2sm.smarthomebackend.api.repository.HubRepository;
 import com.h2sm.smarthomebackend.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +19,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository repository;
+    private final HubRepository hubRepository;
 
     @Override
     @Transactional
@@ -25,5 +27,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         UserEntity user = repository.getUserEntityByUserLogin(email);
 
         return new User(user.getUserLogin(), user.getPassword(), Collections.singleton(new SimpleGrantedAuthority("user")));
+    }
+
+    @Transactional
+    public UserDetails loadByHub(String hubId) {
+        var hub = hubRepository.findHubEntityByHubAuthIdEquals(hubId);
+        return new User(hub.getHubAuthId(), hub.getHubName(), Collections.singleton(new SimpleGrantedAuthority("user")));
+
     }
 }

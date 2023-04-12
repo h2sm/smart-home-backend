@@ -1,5 +1,6 @@
 package com.h2sm.smarthomebackend.api.auth.configuration;
 
+import com.h2sm.smarthomebackend.api.entities.HubEntity;
 import com.h2sm.smarthomebackend.api.entities.UserEntity;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -29,6 +30,21 @@ public class JWTUtils {
         String compactTokenString = Jwts.builder()
                 .claim("id", userEntity.getId())
                 .claim("sub", userEntity.getUserLogin())
+                .setExpiration(expirationDate)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        return compactTokenString;
+    }
+    public String createJWT(HubEntity hubEntity){
+        Instant expirationTime = Instant.now().plus(1, ChronoUnit.HOURS);
+        Date expirationDate = Date.from(expirationTime);
+
+        Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+
+        String compactTokenString = Jwts.builder()
+                .claim("id", hubEntity.getHubId())
+                .claim("sub", hubEntity.getHubAuthId())
                 .setExpiration(expirationDate)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();

@@ -2,21 +2,15 @@ package com.h2sm.smarthomebackend.api.auth.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.messaging.converter.DefaultContentTypeResolver;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
-import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -30,42 +24,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/hello").setHandshakeHandler(new DefaultHandshakeHandler() {
-
-            public boolean beforeHandshake(
-                    ServerHttpRequest request,
-                    ServerHttpResponse response,
-                    WebSocketHandler wsHandler,
-                    Map attributes) throws Exception {
-
-                if (request instanceof ServletServerHttpRequest) {
-                    ServletServerHttpRequest servletRequest
-                            = (ServletServerHttpRequest) request;
-                    HttpSession session = servletRequest
-                            .getServletRequest().getSession();
-                    attributes.put("sessionId", session.getId());
-                }
-                return true;
-            }
-        });
-        registry.addEndpoint("/hello").setHandshakeHandler(new DefaultHandshakeHandler() {
-
-            public boolean beforeHandshake(
-                    ServerHttpRequest request,
-                    ServerHttpResponse response,
-                    WebSocketHandler wsHandler,
-                    Map attributes) throws Exception {
-
-                if (request instanceof ServletServerHttpRequest) {
-                    ServletServerHttpRequest servletRequest
-                            = (ServletServerHttpRequest) request;
-                    HttpSession session = servletRequest
-                            .getServletRequest().getSession();
-                    attributes.put("sessionId", session.getId());
-                }
-                return true;
-            }
-        }).withSockJS();
+        registry.addEndpoint("/hello").setAllowedOrigins("*").setHandshakeHandler(new UserHandshakeHandler()); // .setHandshakeHandler(new UserHandshakeHandler())
+        registry.addEndpoint("/hello").setAllowedOrigins("*").setHandshakeHandler(new UserHandshakeHandler()).withSockJS();
     }
 
     @Override
@@ -76,6 +36,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         converter.setObjectMapper(new ObjectMapper());
         converter.setContentTypeResolver(resolver);
         messageConverters.add(converter);
-        return false;
+        return true;
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new AuthChannelInterceptor());
     }
 }

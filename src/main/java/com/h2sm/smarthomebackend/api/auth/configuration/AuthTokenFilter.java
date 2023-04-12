@@ -24,22 +24,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.security.Key;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
 
+    private static final String TOKEN_PREFIX = "Bearer ";
+    private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
     private final UserDetailsServiceImpl userDetailsService;
-
     @Value("${h2sm.app.jwtSecret}")
     private String jwtSecret;
-
     @Value("${h2sm.app.jwtExpirationMs}")
     private int jwtExpirationMs;
-
-    private static final String TOKEN_PREFIX = "Bearer ";
-
-    private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
@@ -48,8 +45,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             String jwt = parseJwt(request);
             if (jwt != null && validateJwtToken(jwt)) {
                 String username = getUserNameFromJwtToken(jwt);
+                UserDetails userDetails;
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                try {
+                    userDetails = userDetailsService.loadUserByUsername(username);
+                } catch (NullPointerException e) {
+                    userDetails = userDetailsService.loadByHub(username);
+                }
+
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -61,12 +64,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-        }
+    }
 
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(TOKEN_PREFIX)) {
             return headerAuth.substring(7);
+        } else if (StringUtils.hasText(request.getQueryString())) {
+            return request.getQueryString().substring(6);
         }
         logger.error("Cannot parse JWT:" + headerAuth);
         return null;

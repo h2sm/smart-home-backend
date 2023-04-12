@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HubRepository extends JpaRepository<HubEntity, Long> {
+    HubEntity findHubEntityByHubAuthIdEquals(String hubAuthId);
 }
