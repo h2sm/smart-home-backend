@@ -38,12 +38,12 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
-                .antMatchers("/hello/*").authenticated();
+                .antMatchers("/hello/*").authenticated()
 //                .antMatchers("/app/**").anonymous()
 //                .antMatchers("/hello/**").anonymous()
 //                .antMatchers("/queue/**").anonymous()
 //                .antMatchers("/hi/**").anonymous()
-                //.anyRequest().anonymous();
+                .anyRequest().authenticated();
 
         http.addFilterAfter(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
