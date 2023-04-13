@@ -18,7 +18,7 @@ public class WebSocketController {
     @MessageMapping("/hello")
     @SendToUser("/queue/greetings")
     public Greeting greeting(@Payload ActionDTO action) {
-
+        simpUserRegistry.getUsers().forEach(System.out::println);
         return new Greeting("Hello, !");
     }
 

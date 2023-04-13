@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.FilterChain;
@@ -23,7 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @Component
@@ -71,7 +75,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(TOKEN_PREFIX)) {
             return headerAuth.substring(7);
         } else if (StringUtils.hasText(request.getQueryString())) {
-            return request.getQueryString().substring(6);
+            return String.join("", request.getParameterMap().get("token"));
         }
         logger.error("Cannot parse JWT:" + headerAuth);
         return null;
