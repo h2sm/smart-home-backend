@@ -5,6 +5,7 @@ import com.h2sm.smarthomebackend.api.entities.DeviceEntity;
 import com.h2sm.smarthomebackend.api.repository.DeviceRepository;
 import com.h2sm.smarthomebackend.api.service.DeviceService;
 import com.h2sm.smarthomebackend.api.service.entityToDTO.impl.DeviceInformationChanger;
+import com.h2sm.smarthomebackend.dtos.ActionDTO;
 import com.h2sm.smarthomebackend.dtos.ChangeColorDTO;
 import com.h2sm.smarthomebackend.dtos.DeviceInformationDTO;
 import com.h2sm.smarthomebackend.dtos.DeviceSharingDTO;
@@ -13,13 +14,18 @@ import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
 public class DeviceServiceImpl implements DeviceService {
+    private static String TURN_ON = "TURN_ON";
+    private static String TURN_OFF = "TURN_OFF";
     private final DeviceRepository deviceRepository;
     private final DeviceInformationChanger deviceInformationChanger;
+    private final SocketConnectionService socketConnectionService;
 
     @Override
     @Transactional
@@ -33,10 +39,11 @@ public class DeviceServiceImpl implements DeviceService {
     @Transactional
     public boolean switchDeviceState(Long deviceId, boolean isOn) {
         var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
-        var hubAddress = deviceEntity.getConnectedHub().getHubAuthId();
-       // var channel = ServerHandler.getChannelsMap().get(hubAddress);
-        var state = isOn ? "TURN_ON" : "TURN_OFF";
-        //channel.writeAndFlush(state + ":" + deviceEntity.getLocalIpAddress());
+        var hubAuthId = deviceEntity.getConnectedHub().getHubAuthId();
+        var state = isOn ? TURN_ON : TURN_OFF;
+        var map = new HashMap<String, String>();
+        map.put("ip", deviceEntity.getLocalIpAddress());
+        socketConnectionService.sendMessageToHub(hubAuthId, new ActionDTO(state, map));
         return true;
     }
 

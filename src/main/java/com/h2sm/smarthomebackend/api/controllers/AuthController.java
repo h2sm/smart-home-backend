@@ -23,9 +23,4 @@ public class AuthController {
         return ResponseEntity.ok(authService.doLoginHub(dto));
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ResponseEntity<?> register(@RequestBody RegistrationDTO dto) {
-        return ResponseEntity.ok(authService.doRegister(dto));
-    }
-
 }

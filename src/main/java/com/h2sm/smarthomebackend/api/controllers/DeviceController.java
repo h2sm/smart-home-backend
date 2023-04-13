@@ -38,7 +38,7 @@ public class DeviceController {
 
 
     @RequestMapping(value = "/{deviceId}/state", method = RequestMethod.PUT)
-    public ResponseEntity<?> switchDeviceState(@PathVariable String deviceId, @RequestBody Boolean isOn) { // switch state of a device (on or off)
+    public ResponseEntity<?> switchDeviceState(@PathVariable String deviceId, @RequestBody boolean isOn) { // switch state of a device (on or off)
         return ResponseEntity.ok(service.switchDeviceState(Long.parseLong(deviceId), isOn));
     }
 
