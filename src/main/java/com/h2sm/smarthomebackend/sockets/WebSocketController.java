@@ -25,6 +25,7 @@ public class WebSocketController {
         simpUserRegistry.getUsers().forEach(System.out::println);
         return new ActionDTO("Hello", new HashMap<>());
     }
+
     @MessageMapping("/resp")
     public void responseFromHub(Principal principal, @Payload ActionDTO actionDTO){
         System.out.println(principal.getName());

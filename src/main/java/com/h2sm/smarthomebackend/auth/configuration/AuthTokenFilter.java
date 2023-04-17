@@ -72,7 +72,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         } else if (StringUtils.hasText(request.getQueryString())) {
             return String.join("", request.getParameterMap().get("token"));
         }
-        logger.error("Cannot parse JWT:" + headerAuth);
+        logger.warn("Cannot parse JWT:" + headerAuth);
         return null;
     }
 
