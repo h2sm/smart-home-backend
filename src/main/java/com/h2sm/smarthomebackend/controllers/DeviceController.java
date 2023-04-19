@@ -1,6 +1,7 @@
 package com.h2sm.smarthomebackend.controllers;
 
 import com.h2sm.smarthomebackend.dtos.DeviceDTO;
+import com.h2sm.smarthomebackend.dtos.NewDeviceDTO;
 import com.h2sm.smarthomebackend.service.impl.DeviceServiceImpl;
 import com.h2sm.smarthomebackend.dtos.ChangeColorDTO;
 import com.h2sm.smarthomebackend.dtos.DeviceSharingDTO;
@@ -20,22 +21,8 @@ public class DeviceController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ResponseEntity<?> getListOfDevices() {
-        var list = service.returnDevicesList();
-        var finalList = new ArrayList<DeviceDTO>();
-        list.forEach(device -> {
-            var dev = DeviceDTO.builder()
-                    .deviceLocation(device.getDeviceLocation())
-                    .deviceName(device.getDeviceName())
-                    .deviceSerial(device.getDeviceSerial())
-                    .id(device.getId())
-                    .localIpAddress(device.getLocalIpAddress())
-                    .build();
-            finalList.add(dev);
-        });
-
-        return ResponseEntity.ok(finalList);
+        return ResponseEntity.ok(service.returnDevicesList());
     }
-
 
     @RequestMapping(value = "/{deviceId}/state", method = RequestMethod.PUT)
     public ResponseEntity<?> switchDeviceState(@PathVariable String deviceId, @RequestBody boolean isOn) { // switch state of a device (on or off)
@@ -58,8 +45,19 @@ public class DeviceController {
     }
 
     @RequestMapping(value = "/{deviceId}/color")
-    public ResponseEntity<?> changeColor(@PathVariable Long deviceId, @RequestBody ChangeColorDTO dto){
+    public ResponseEntity<?> changeColor(@PathVariable Long deviceId, @RequestBody ChangeColorDTO dto) {
         return ResponseEntity.ok(service.changeColor(deviceId, dto));
     }
+
+    @RequestMapping(value = "/new", method = RequestMethod.POST)
+    public ResponseEntity<?> addNewDevice(@RequestBody NewDeviceDTO dto) {
+        return ResponseEntity.ok(service.addNewDevice(dto));
+    }
+
+    @RequestMapping(value = "/{deviceId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteDevice(@PathVariable Long deviceId) {
+        return ResponseEntity.ok(service.deleteDevice(deviceId));
+    }
+
 
 }

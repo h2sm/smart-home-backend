@@ -30,9 +30,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Transactional
-    public UserDetails loadByHub(String hubId) {
-        var hub = hubRepository.findHubEntityByHubAuthIdEquals(hubId);
-        return new User(hub.getHubAuthId(), hub.getHubName(), Collections.singleton(new SimpleGrantedAuthority("user")));
+    public UserDetails loadByHub(String hubUuid) {
+        var hub = hubRepository.findHubEntityByHubUuidEquals(hubUuid);
+        return new User(hub.getHubUuid(), hub.getHubSecret(), Collections.singleton(new SimpleGrantedAuthority("user")));
 
     }
 }

@@ -1,6 +1,7 @@
 package com.h2sm.smarthomebackend.auth.provider;
 
 import com.h2sm.smarthomebackend.auth.configuration.JWTUtils;
+import com.h2sm.smarthomebackend.entities.HubEntity;
 import com.h2sm.smarthomebackend.entities.UserEntity;
 import com.h2sm.smarthomebackend.repository.HubRepository;
 import com.h2sm.smarthomebackend.repository.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.Collections;
 
 
@@ -37,14 +39,14 @@ public class AuthProvider implements AuthenticationProvider {
         return new UsernamePasswordAuthenticationToken(userEntity, jwt, Collections.singleton(new SimpleGrantedAuthority("User")));
     }
 
-    public UsernamePasswordAuthenticationToken authenticateHub(Authentication authentication){
-        String hubAuthId = authentication.getName();
-        //String password = authentication.getCredentials().toString();
-        var userEntity = hubRepository.findHubEntityByHubAuthIdEquals(authentication.getName());
-        //checkLoginCredentials(userEntity, password);
-        var jwt = jwtUtils.createJWT(userEntity);
+    public UsernamePasswordAuthenticationToken authenticateHub(Authentication authentication) {
+        String hubUuid = authentication.getName();
+        String hubSecret = authentication.getCredentials().toString();
+        var hubEntity = hubRepository.findHubEntityByHubUuidEquals(hubUuid);
+        checkLoginCredentials(hubEntity, hubSecret);
+        var jwt = jwtUtils.createJWT(hubEntity);
 
-        return new UsernamePasswordAuthenticationToken(userEntity, jwt, Collections.singleton(new SimpleGrantedAuthority("User")));
+        return new UsernamePasswordAuthenticationToken(hubEntity, jwt, Collections.singleton(new SimpleGrantedAuthority("User")));
 
     }
 
@@ -63,7 +65,17 @@ public class AuthProvider implements AuthenticationProvider {
         }
     }
 
+    public void checkLoginCredentials(HubEntity hubEntity, String providedPassword) {
+        if (hubEntity == null) {
+            throwException(USER_NOT_FOUND);
+        }
+
+        if (!passwordEncoder.matches(providedPassword, hubEntity.getHubSecret())) {
+            throwException(INCORRECT_DATA);
+        }
+    }
+
     public void throwException(String exception) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception);
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, exception);
     }
 }

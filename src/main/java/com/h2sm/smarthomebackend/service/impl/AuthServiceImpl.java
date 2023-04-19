@@ -24,10 +24,11 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthenticatedHubDTO doLoginHub(AuthenticateHubDTO dto){
         var auth = provider.authenticateHub(
-                new UsernamePasswordAuthenticationToken(dto.getHubAuthId(), dto.getHubPass()));
+                new UsernamePasswordAuthenticationToken(dto.getHubUuid(), dto.getHubSecret()));
         SecurityContextHolder.getContext().setAuthentication(auth);
         return new AuthenticatedHubDTO((String) auth.getCredentials());
     }
+
 
     @Override
     public UsernamePasswordAuthenticationToken doRegister(RegistrationDTO dto) {

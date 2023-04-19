@@ -5,14 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class NewHubDTO implements Serializable {
-    private String hubUuid;
-    private String hubSecret;
+public class HubDTO {
     private String hubName;
+    private Long hubUuid;
 }

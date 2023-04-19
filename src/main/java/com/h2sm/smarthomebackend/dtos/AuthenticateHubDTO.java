@@ -8,6 +8,6 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 public class AuthenticateHubDTO implements Serializable {
-    private String hubAuthId;
-    private String hubPass;
+    private String hubUuid;
+    private String hubSecret;
 }

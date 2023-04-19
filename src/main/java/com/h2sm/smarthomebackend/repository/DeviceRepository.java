@@ -11,4 +11,5 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity, Long> {
     List<DeviceEntity> getDeviceEntitiesByDeviceOwnerUserLoginEquals(String deviceOwnerLogin);
     DeviceEntity getDeviceEntityByIdEquals(Long id);
     DeviceEntity getDeviceEntityById(Long id);
+    void deleteDeviceEntityByIdEquals(Long id);
 }

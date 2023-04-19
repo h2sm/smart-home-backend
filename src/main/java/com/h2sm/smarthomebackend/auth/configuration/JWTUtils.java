@@ -28,14 +28,12 @@ public class JWTUtils {
 
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
-        String compactTokenString = Jwts.builder()
+        return Jwts.builder()
                 .claim("id", userEntity.getId())
                 .claim("sub", userEntity.getUserLogin())
                 .setExpiration(expirationDate)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-
-        return compactTokenString;
     }
     public String createJWT(HubEntity hubEntity){
         Instant expirationTime = Instant.now().plus(1, ChronoUnit.HOURS);
@@ -43,13 +41,11 @@ public class JWTUtils {
 
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
-        String compactTokenString = Jwts.builder()
-                .claim("id", hubEntity.getHubId())
-                .claim("sub", hubEntity.getHubAuthId())
+        return Jwts.builder()
+                .claim("id", hubEntity.getHubUuid())
+                .claim("sub", hubEntity.getHubName())
                 .setExpiration(expirationDate)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-
-        return compactTokenString;
     }
 }
