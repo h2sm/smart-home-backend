@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +31,7 @@ public class DeviceServiceImpl implements DeviceService {
     @Transactional
     public boolean addNewDevice(NewDeviceDTO dto) {
         var newDeviceEntity = DeviceEntity.builder()
+                .deviceType(DeviceType.valueOf(dto.getDeviceType()))
                 .deviceName(dto.getDeviceName())
                 .deviceLocation(dto.getDeviceLocation())
                 .deviceSerial(dto.getDeviceSerial())
@@ -47,9 +47,8 @@ public class DeviceServiceImpl implements DeviceService {
     @Transactional
     public List<DeviceInformationDTO> returnDevicesList() {
         var listOfDevices = deviceRepository.getDeviceEntitiesByDeviceOwnerUserLoginEquals(UsernameDetails.getUsername());
-        var list = listOfDevices.stream().map(deviceInformationChanger::entityToDTO).collect(Collectors.toList());
 
-        return list;
+        return listOfDevices.stream().map(deviceInformationChanger::entityToDTO).collect(Collectors.toList());
     }
 
     @Transactional

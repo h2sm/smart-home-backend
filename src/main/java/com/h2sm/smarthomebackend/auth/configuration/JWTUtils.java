@@ -43,7 +43,7 @@ public class JWTUtils {
 
         return Jwts.builder()
                 .claim("id", hubEntity.getHubUuid())
-                .claim("sub", hubEntity.getHubName())
+                .claim("sub", hubEntity.getHubUuid())
                 .setExpiration(expirationDate)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();

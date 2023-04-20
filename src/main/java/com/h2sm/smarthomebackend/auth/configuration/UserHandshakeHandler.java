@@ -19,7 +19,7 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         var queryParams = UriComponentsBuilder.fromUriString(request.getURI().toString())
                                                                         .build().getQueryParams();
-        var hubAuthId = queryParams.get("hubAuthId").get(0);
+        var hubAuthId = queryParams.get("hubUuid").get(0);
         return new UserPrincipal(hubAuthId);
     }
 

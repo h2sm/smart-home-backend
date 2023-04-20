@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class NewDeviceDTO {
+    private String deviceType;
     private String deviceName;
     private String deviceLocation;
     private String deviceSerial;
