@@ -61,6 +61,9 @@ public class DeviceServiceImpl implements DeviceService {
     @Transactional
     public boolean switchDeviceState(Long deviceId, boolean isOn) {
         var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
+        deviceEntity.getStatistics().forEach(deviceInfoEntity -> {
+            if (deviceInfoEntity.getDeviceEntity() == deviceId && deviceInfoEntity.getKey().equals("isOn")) deviceInfoEntity.setValue(Boolean.toString(isOn));
+        });
         var hubAuthId = deviceEntity.getConnectedHub().getHubUuid();
         var state = isOn ? TURN_ON : TURN_OFF;
         var map = new HashMap<String, String>();
