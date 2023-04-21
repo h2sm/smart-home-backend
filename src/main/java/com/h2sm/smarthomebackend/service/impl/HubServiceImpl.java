@@ -4,6 +4,7 @@ import com.h2sm.smarthomebackend.auth.userdetails.UsernameDetails;
 import com.h2sm.smarthomebackend.dtos.HubDTO;
 import com.h2sm.smarthomebackend.dtos.NewHubDTO;
 import com.h2sm.smarthomebackend.entities.HubEntity;
+import com.h2sm.smarthomebackend.repository.DeviceRepository;
 import com.h2sm.smarthomebackend.repository.HubRepository;
 import com.h2sm.smarthomebackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 public class HubServiceImpl {
     private final HubRepository hubRepository;
     private final UserRepository userRepository;
+    private final DeviceRepository deviceRepository;
 
     @Transactional
     public List<HubDTO> returnAllAvailableHubsForUser() {
@@ -36,6 +38,19 @@ public class HubServiceImpl {
                 .hubSecret(newHubDTO.getHubSecret())
                 .build();
         hubRepository.save(hubEntity);
+        return true;
+    }
+
+    @Transactional
+    public boolean deleteHub(String hubUuid){
+        if (!deviceRepository.getDeviceEntitiesByDeviceOwnerUserLoginEquals(UsernameDetails.getUsername()).isEmpty()) {
+            throw new IllegalStateException("Cannot delete hub with connected devices");
+        } else {
+            var entity = hubRepository.findHubEntityByHubUuidEquals(hubUuid);
+            entity.setHubOwner(null);
+            hubRepository.save(entity);
+            hubRepository.delete(entity);
+        }
         return true;
     }
 }

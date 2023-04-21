@@ -20,7 +20,7 @@ public class HubController {
 
     @RequestMapping(value = "/{hubUuid}", method = RequestMethod.DELETE)
     public ResponseEntity<?> removeHub(@PathVariable String hubUuid){
-        return null;
+        return ResponseEntity.ok(hubService.deleteHub(hubUuid));
     }
 
     @RequestMapping(method = RequestMethod.GET)

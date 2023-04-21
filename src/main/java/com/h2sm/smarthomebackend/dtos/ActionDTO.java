@@ -13,4 +13,9 @@ import java.util.Map;
 public class ActionDTO implements Serializable {
     private String action;
     private Map<String, String> map;
+
+    public static ActionDTO changeColorAction(Map<String, String> colorsMap) {
+        return new ActionDTO("CHANGE_COLOR", colorsMap);
+    }
+
 }

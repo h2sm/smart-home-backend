@@ -18,4 +18,9 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     protected ResponseEntity<Object> handleOfflineHub(final RuntimeException ex, final WebRequest request) {
         return handleExceptionInternal(ex, "Hub is not connected", new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
+
+    @ExceptionHandler(value = {IllegalStateException.class})
+    protected ResponseEntity<Object> handleDeletingHub(final RuntimeException ex, final WebRequest request) {
+        return handleExceptionInternal(ex, "Cannot delete hub with devices connected", new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+    }
 }

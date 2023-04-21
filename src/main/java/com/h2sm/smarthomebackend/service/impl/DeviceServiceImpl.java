@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +54,12 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Transactional
     public boolean deleteDevice(Long deviceId) {
-        deviceRepository.deleteDeviceEntityByIdEquals(deviceId);
+        var entity = deviceRepository.getDeviceEntityById(deviceId);
+        entity.setDeviceOwner(null);
+        entity.setConnectedHub(null);
+        deviceRepository.save(entity);
+        deviceRepository.delete(entity);
+//        deviceRepository.deleteDeviceEntityByIdEquals(deviceId);
         return true;
     }
 
@@ -62,7 +68,8 @@ public class DeviceServiceImpl implements DeviceService {
     public boolean switchDeviceState(Long deviceId, boolean isOn) {
         var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
         deviceEntity.getStatistics().forEach(deviceInfoEntity -> {
-            if (deviceInfoEntity.getDeviceEntity() == deviceId && deviceInfoEntity.getKey().equals("isOn")) deviceInfoEntity.setValue(Boolean.toString(isOn));
+            if (deviceInfoEntity.getDeviceEntity() == deviceId && deviceInfoEntity.getKey().equals("isOn"))
+                deviceInfoEntity.setValue(Boolean.toString(isOn));
         });
         var hubAuthId = deviceEntity.getConnectedHub().getHubUuid();
         var state = isOn ? TURN_ON : TURN_OFF;
@@ -79,7 +86,8 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public DeviceInformationDTO getDeviceInformation(Long deviceId) {
-        return null;
+        var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
+        return deviceInformationChanger.entityToDTO(deviceEntity);
     }
 
     @Override
@@ -89,14 +97,21 @@ public class DeviceServiceImpl implements DeviceService {
 
     public boolean changeColor(Long deviceId, ChangeColorDTO dto) {
         var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
-        var hubAddress = deviceEntity.getConnectedHub().getHubUuid();
-//        var channel = ServerHandler.getChannelsMap().get(hubAddress);
-//        channel.writeAndFlush("CHANGE_COLOR:"
-//                + deviceEntity.getLocalIpAddress() + ":"
-//                + dto.getBrightness() + ":"
-//                + dto.getRed() + ":"
-//                + dto.getGreen() + ":"
-//                + dto.getBlue());
+        var hubUuid = deviceEntity.getConnectedHub().getHubUuid();
+        var map = buildColorsMap(dto, deviceEntity.getLocalIpAddress());
+        socketConnectionService.sendMessageToHub(hubUuid, ActionDTO.changeColorAction(map));
+        deviceEntity.getStatistics().forEach(stats -> stats.setValue(map.get(stats.getKey())));
+        deviceRepository.save(deviceEntity);
         return true;
+    }
+
+    private Map<String, String> buildColorsMap(ChangeColorDTO dto, String ip) {
+        var map = new HashMap<String, String>();
+        map.put("brightness", Integer.toString(dto.getBrightness()));
+        map.put("r", Integer.toString(dto.getRed()));
+        map.put("g", Integer.toString(dto.getGreen()));
+        map.put("b", Integer.toString(dto.getBlue()));
+        map.put("ip", ip);
+        return map;
     }
 }
