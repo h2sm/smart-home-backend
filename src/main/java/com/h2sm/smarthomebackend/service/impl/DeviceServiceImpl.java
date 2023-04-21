@@ -3,6 +3,7 @@ package com.h2sm.smarthomebackend.service.impl;
 import com.h2sm.smarthomebackend.auth.userdetails.UsernameDetails;
 import com.h2sm.smarthomebackend.dtos.*;
 import com.h2sm.smarthomebackend.entities.DeviceEntity;
+import com.h2sm.smarthomebackend.entities.HubEntity;
 import com.h2sm.smarthomebackend.repository.DeviceRepository;
 import com.h2sm.smarthomebackend.repository.HubRepository;
 import com.h2sm.smarthomebackend.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +105,16 @@ public class DeviceServiceImpl implements DeviceService {
         deviceEntity.getStatistics().forEach(stats -> stats.setValue(map.get(stats.getKey())));
         deviceRepository.save(deviceEntity);
         return true;
+    }
+
+    public void updateDataFromDevices() {
+        var allDevicesList = deviceRepository.getAllEntities();
+        var listOfHubs = allDevicesList.stream().map(DeviceEntity::getConnectedHub).distinct().collect(Collectors.toList());
+        listOfHubs.forEach(hub -> {
+            var devicesWithThisHub = allDevicesList.stream().filter(deviceEntity -> deviceEntity.getConnectedHub().equals(hub)).collect(Collectors.toList());
+            socketConnectionService.sendMessageToHub(hub.getHubUuid(), ActionDTO.updateData(devicesWithThisHub.stream().collect(Collectors.toMap(DeviceEntity::getDeviceName, DeviceEntity::getLocalIpAddress))));
+        });
+
     }
 
     private Map<String, String> buildColorsMap(ChangeColorDTO dto, String ip) {
