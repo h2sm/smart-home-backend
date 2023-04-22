@@ -102,7 +102,9 @@ public class DeviceServiceImpl implements DeviceService {
         var hubUuid = deviceEntity.getConnectedHub().getHubUuid();
         var map = buildColorsMap(dto, deviceEntity.getLocalIpAddress());
         socketConnectionService.sendMessageToHub(hubUuid, ActionDTO.changeColorAction(map));
-        deviceEntity.getStatistics().forEach(stats -> stats.setValue(map.get(stats.getKey())));
+        deviceEntity.getStatistics().forEach(stats -> {
+            if (map.get(stats.getKey()) != null) stats.setValue(map.get(stats.getKey()));
+        });
         deviceRepository.save(deviceEntity);
         return true;
     }

@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 public class ScheduledDeviceUpdateService {
     private final DeviceServiceImpl deviceService;
 
-    @Scheduled(cron = "*/2 * * * *")
-    private void updateDevicesState(){
-        log.debug("Fetching updates from devices");
-        deviceService.updateDataFromDevices();
-        log.debug("Fetching data completed");
-    }
+//    @Scheduled(cron = "*/2 * * * *")
+//    private void updateDevicesState(){
+//        log.debug("Fetching updates from devices");
+//        deviceService.updateDataFromDevices();
+//        log.debug("Fetching data completed");
+//    }
 }
