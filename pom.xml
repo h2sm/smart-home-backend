@@ -29,7 +29,9 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
                 <os>
-                    <family>macos</family>
+                    <name>mac os x</name>
+                    <arch>aarch64</arch>
+                    <family>mac</family>
                 </os>
             </activation>
         </profile>
