@@ -6,7 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.util.List;
 
 @Entity
@@ -31,14 +34,9 @@ public class DeviceEntity {
     private String deviceSerial;
     @Column(name = "local_ip_address")
     private String localIpAddress;
-    @ManyToMany(fetch = FetchType.EAGER,
-            cascade = {
-                    CascadeType.ALL
-            })
-    @JoinTable(name = "device_info",
-            joinColumns = {@JoinColumn(name = "device_id"),
-            }, inverseJoinColumns = @JoinColumn( name="stats_id"))
-    private List<DeviceInfoEntity> statistics;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "json_properties")
+    private DeviceJsonProperty jsonProperties;
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "device_owner", referencedColumnName = "user_id")
     private UserEntity deviceOwner;

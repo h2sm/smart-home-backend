@@ -8,7 +8,6 @@ spring:
     password: docker
     url: '@jdbc.url@'
     driver-class-name: org.postgresql.Driver
-
 server:
   port: 8082
 #  ssl:
@@ -19,6 +18,11 @@ server:
 #    enabled: true
 h2sm:
   app:
-    jwtSecret: NETVOYNENETVOYNENETVOYNENETVOYNENETVOYNENETVOYNE
+    jwtSecret: BARABARABARABEREBEREBEREBARABARABARABEREBEREBERE
     jwtExpirationMs: 360000000
 
+db:
+  driver: org.postgresql.Driver
+  url: '@jdbc.url@'
+  username: docker
+  password: docker

@@ -1,15 +1,13 @@
 package com.h2sm.smarthomebackend.controllers;
 
-import com.h2sm.smarthomebackend.dtos.DeviceDTO;
-import com.h2sm.smarthomebackend.dtos.NewDeviceDTO;
+import com.h2sm.smarthomebackend.dtos.*;
 import com.h2sm.smarthomebackend.service.impl.DeviceServiceImpl;
-import com.h2sm.smarthomebackend.dtos.ChangeColorDTO;
-import com.h2sm.smarthomebackend.dtos.DeviceSharingDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 @RestController
@@ -57,6 +55,11 @@ public class DeviceController {
     @RequestMapping(value = "/{deviceId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteDevice(@PathVariable Long deviceId) {
         return ResponseEntity.ok(service.deleteDevice(deviceId));
+    }
+
+    @RequestMapping(value = "/types", method = RequestMethod.GET)
+    public ResponseEntity<?> getAvailableDeviceTypes() {
+        return ResponseEntity.ok(Arrays.stream(DeviceType.values()).toList());
     }
 
 

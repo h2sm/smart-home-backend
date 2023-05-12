@@ -3,21 +3,20 @@ package com.h2sm.smarthomebackend.service.impl;
 import com.h2sm.smarthomebackend.auth.userdetails.UsernameDetails;
 import com.h2sm.smarthomebackend.dtos.*;
 import com.h2sm.smarthomebackend.entities.DeviceEntity;
-import com.h2sm.smarthomebackend.entities.HubEntity;
+import com.h2sm.smarthomebackend.entities.DeviceJsonProperty;
 import com.h2sm.smarthomebackend.repository.DeviceRepository;
 import com.h2sm.smarthomebackend.repository.HubRepository;
 import com.h2sm.smarthomebackend.repository.UserRepository;
 import com.h2sm.smarthomebackend.service.DeviceService;
 import com.h2sm.smarthomebackend.service.entityToDTO.impl.DeviceInformationChanger;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-
-import javax.transaction.Transactional;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +36,7 @@ public class DeviceServiceImpl implements DeviceService {
                 .deviceType(DeviceType.valueOf(dto.getDeviceType()))
                 .deviceName(dto.getDeviceName())
                 .deviceLocation(dto.getDeviceLocation())
+                .jsonProperties(DeviceJsonProperty.newDevice(DeviceType.valueOf(dto.getDeviceType())))
                 .deviceSerial(dto.getDeviceSerial())
                 .localIpAddress(dto.getLocalIpAddress())
                 .deviceOwner(userRepository.getUserEntityByUserLogin(UsernameDetails.getUsername()))
@@ -56,11 +56,12 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Transactional
     public boolean deleteDevice(Long deviceId) {
-        var entity = deviceRepository.getDeviceEntityById(deviceId);
-        entity.setDeviceOwner(null);
-        entity.setConnectedHub(null);
-        deviceRepository.save(entity);
-        deviceRepository.delete(entity);
+        deviceRepository.deleteAllByIdInBatch(Set.of(deviceId));
+//        var entity = deviceRepository.getDeviceEntityById(deviceId);
+//        entity.setDeviceOwner(null);
+//        entity.setConnectedHub(null);
+//        deviceRepository.save(entity);
+//        deviceRepository.delete(entity);
 //        deviceRepository.deleteDeviceEntityByIdEquals(deviceId);
         return true;
     }
@@ -69,16 +70,18 @@ public class DeviceServiceImpl implements DeviceService {
     @Transactional
     public boolean switchDeviceState(Long deviceId, boolean isOn) {
         var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
-        deviceEntity.getStatistics().forEach(deviceInfoEntity -> {
-            if (deviceInfoEntity.getDeviceEntity() == deviceId && deviceInfoEntity.getKey().equals("isOn"))
-                deviceInfoEntity.setValue(Boolean.toString(isOn));
-        });
+        getDeviceProperties(deviceEntity).put("isOn", Boolean.toString(isOn));
+        deviceRepository.save(deviceEntity);
         var hubAuthId = deviceEntity.getConnectedHub().getHubUuid();
         var state = isOn ? TURN_ON : TURN_OFF;
         var map = new HashMap<String, String>();
         map.put("ip", deviceEntity.getLocalIpAddress());
-        socketConnectionService.sendMessageToHub(hubAuthId, new ActionDTO(state, map));
+        //socketConnectionService.sendMessageToHub(hubAuthId, new ActionDTO(state, map));
         return true;
+    }
+
+    private Map<String, String> getDeviceProperties(DeviceEntity entity){
+        return entity.getJsonProperties().getValues();
     }
 
     @Override
@@ -97,16 +100,23 @@ public class DeviceServiceImpl implements DeviceService {
         return false;
     }
 
+    @Transactional
     public boolean changeColor(Long deviceId, ChangeColorDTO dto) {
         var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
+        setColorsToJSON(getDeviceProperties(deviceEntity), dto);
+        deviceRepository.save(deviceEntity);
+
         var hubUuid = deviceEntity.getConnectedHub().getHubUuid();
         var map = buildColorsMap(dto, deviceEntity.getLocalIpAddress());
         socketConnectionService.sendMessageToHub(hubUuid, ActionDTO.changeColorAction(map));
-        deviceEntity.getStatistics().forEach(stats -> {
-            if (map.get(stats.getKey()) != null) stats.setValue(map.get(stats.getKey()));
-        });
-        deviceRepository.save(deviceEntity);
         return true;
+    }
+
+    private void setColorsToJSON(Map<String, String> map, ChangeColorDTO dto){
+        map.put("r", String.valueOf(dto.getRed()));
+        map.put("g", String.valueOf(dto.getGreen()));
+        map.put("b", String.valueOf(dto.getBlue()));
+        map.put("brightness", String.valueOf(dto.getBrightness()));
     }
 
     public void updateDataFromDevices() {

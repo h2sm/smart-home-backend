@@ -3,14 +3,15 @@ package com.h2sm.smarthomebackend.service.impl;
 import com.h2sm.smarthomebackend.auth.userdetails.UsernameDetails;
 import com.h2sm.smarthomebackend.dtos.HubDTO;
 import com.h2sm.smarthomebackend.dtos.NewHubDTO;
+import com.h2sm.smarthomebackend.entities.DeviceEntity;
 import com.h2sm.smarthomebackend.entities.HubEntity;
 import com.h2sm.smarthomebackend.repository.DeviceRepository;
 import com.h2sm.smarthomebackend.repository.HubRepository;
 import com.h2sm.smarthomebackend.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,9 @@ public class HubServiceImpl {
 
     @Transactional
     public boolean deleteHub(String hubUuid){
-        if (!deviceRepository.getDeviceEntitiesByDeviceOwnerUserLoginEquals(UsernameDetails.getUsername()).isEmpty()) {
+        var list = deviceRepository.getDeviceEntitiesByDeviceOwnerUserLoginEquals(UsernameDetails.getUsername());
+        var contains = list.stream().anyMatch(x -> x.getConnectedHub().getHubUuid().equals(hubUuid));
+        if (!list.isEmpty() && contains){
             throw new IllegalStateException("Cannot delete hub with connected devices");
         } else {
             var entity = hubRepository.findHubEntityByHubUuidEquals(hubUuid);
