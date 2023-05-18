@@ -1,6 +1,7 @@
 package com.h2sm.smarthomebackend.auth.provider;
 
 import com.h2sm.smarthomebackend.auth.configuration.JWTUtils;
+import com.h2sm.smarthomebackend.dtos.RegistrationDTO;
 import com.h2sm.smarthomebackend.entities.HubEntity;
 import com.h2sm.smarthomebackend.entities.UserEntity;
 import com.h2sm.smarthomebackend.repository.HubRepository;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,6 +30,7 @@ public class AuthProvider implements AuthenticationProvider {
     private final HubRepository hubRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtils jwtUtils;
+    private final BCryptPasswordEncoder encoder;
 
     @Override
     public UsernamePasswordAuthenticationToken authenticate(Authentication authentication) throws AuthenticationException {
@@ -45,9 +48,17 @@ public class AuthProvider implements AuthenticationProvider {
         var hubEntity = hubRepository.findHubEntityByHubUuidEquals(hubUuid);
         checkLoginCredentials(hubEntity, hubSecret);
         var jwt = jwtUtils.createJWT(hubEntity);
-
         return new UsernamePasswordAuthenticationToken(hubEntity, jwt, Collections.singleton(new SimpleGrantedAuthority("User")));
+    }
 
+    public void createUser(RegistrationDTO dto){
+        var newUser = UserEntity.builder()
+                .username(dto.getName())
+                .userSurname(dto.getSurname())
+                .userLogin(dto.getLogin())
+                .password(encoder.encode(dto.getPassword()))
+                .build();
+        authRepository.save(newUser);
     }
 
     @Override

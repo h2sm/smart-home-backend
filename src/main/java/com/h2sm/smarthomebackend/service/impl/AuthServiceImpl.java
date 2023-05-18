@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UsernamePasswordAuthenticationToken doRegister(RegistrationDTO dto) {
+        provider.createUser(dto);
         return null;
     }
-
 }

@@ -2,6 +2,7 @@ package com.h2sm.smarthomebackend.entities;
 
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
+@Builder
 public class UserEntity {
     @Id
     @Column(name = "user_id")

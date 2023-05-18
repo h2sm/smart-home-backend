@@ -19,8 +19,6 @@ import java.util.Collections;
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-//    @PersistenceContext
-//    private EntityManager entityManager;
     @Autowired
     private final UserRepository repository;
     @Autowired

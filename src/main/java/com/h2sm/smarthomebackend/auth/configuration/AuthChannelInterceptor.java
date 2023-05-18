@@ -10,6 +10,7 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        var x = message.getHeaders();
 
         // Instantiate an object for retrieving the STOMP headers
 //        final StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
