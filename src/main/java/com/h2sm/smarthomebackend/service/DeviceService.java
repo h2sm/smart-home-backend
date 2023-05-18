@@ -8,7 +8,6 @@ import java.util.List;
 public interface DeviceService {
     List returnDevicesList();
     boolean switchDeviceState(Long deviceId, boolean isOn);
-    boolean getDeviceState(Long deviceId);
     DeviceInformationDTO getDeviceInformation(Long deviceId);
     boolean shareDeviceControl(DeviceSharingDTO dto);
 }

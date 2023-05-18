@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class DeviceSharingDTO {
     private Long sharedDeviceId;
-    private String allowedUserEmail;
+    private String allowedUserLogin;
     private Date dateFrom;
     private Date dateTo;
 }

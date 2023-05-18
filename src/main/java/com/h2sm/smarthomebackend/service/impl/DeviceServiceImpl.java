@@ -4,15 +4,19 @@ import com.h2sm.smarthomebackend.auth.userdetails.UsernameDetails;
 import com.h2sm.smarthomebackend.dtos.*;
 import com.h2sm.smarthomebackend.entities.DeviceEntity;
 import com.h2sm.smarthomebackend.entities.DeviceJsonProperty;
+import com.h2sm.smarthomebackend.entities.SharedDeviceEntity;
 import com.h2sm.smarthomebackend.repository.DeviceRepository;
 import com.h2sm.smarthomebackend.repository.HubRepository;
+import com.h2sm.smarthomebackend.repository.SharedDeviceRepository;
 import com.h2sm.smarthomebackend.repository.UserRepository;
 import com.h2sm.smarthomebackend.service.DeviceService;
 import com.h2sm.smarthomebackend.service.entityToDTO.impl.DeviceInformationChanger;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +31,10 @@ public class DeviceServiceImpl implements DeviceService {
     private final DeviceRepository deviceRepository;
     private final UserRepository userRepository;
     private final HubRepository hubRepository;
+    private final SharedDeviceRepository sharedDeviceRepository;
     private final DeviceInformationChanger deviceInformationChanger;
     private final SocketConnectionService socketConnectionService;
-
+    //в зависимости от device type при помощи factory создаем нуждный клас с пропертями для этой сущности
     @Transactional
     public boolean addNewDevice(NewDeviceDTO dto) {
         var newDeviceEntity = DeviceEntity.builder()
@@ -49,8 +54,10 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     @Transactional
     public List<DeviceInformationDTO> returnDevicesList() {
-        var listOfDevices = deviceRepository.getDeviceEntitiesByDeviceOwnerUserLoginEquals(UsernameDetails.getUsername());
-
+        var username = UsernameDetails.getUsername();
+        var listOfDevices = deviceRepository.getDeviceEntitiesByDeviceOwnerUserLoginEquals(username);
+        var sharedDevices = sharedDeviceRepository.findSharedDeviceEntitiesByAllowedUser_UserLogin(username);
+        sharedDevices.forEach(sharedDevice -> listOfDevices.add(sharedDevice.getSharedDevice()));
         return listOfDevices.stream().map(deviceInformationChanger::entityToDTO).collect(Collectors.toList());
     }
 
@@ -76,7 +83,7 @@ public class DeviceServiceImpl implements DeviceService {
         var state = isOn ? TURN_ON : TURN_OFF;
         var map = new HashMap<String, String>();
         map.put("ip", deviceEntity.getLocalIpAddress());
-        //socketConnectionService.sendMessageToHub(hubAuthId, new ActionDTO(state, map));
+        socketConnectionService.sendMessageToHub(hubAuthId, new ActionDTO(state, map));
         return true;
     }
 
@@ -84,20 +91,29 @@ public class DeviceServiceImpl implements DeviceService {
         return entity.getJsonProperties().getValues();
     }
 
-    @Override
-    public boolean getDeviceState(Long deviceId) {
-        return false;
-    }
 
     @Override
+    @Transactional
     public DeviceInformationDTO getDeviceInformation(Long deviceId) {
         var deviceEntity = deviceRepository.getDeviceEntityById(deviceId);
         return deviceInformationChanger.entityToDTO(deviceEntity);
     }
 
     @Override
+    @Transactional
     public boolean shareDeviceControl(DeviceSharingDTO dto) {
-        return false;
+        var allowedUser = userRepository.getUserEntityByUserLogin(dto.getAllowedUserLogin());
+        if (allowedUser == null) throw new UsernameNotFoundException("User not found");
+
+        var sharedDeviceEntity = SharedDeviceEntity.builder()
+                .deviceOwner(userRepository.getUserEntityByUserLogin(UsernameDetails.getUsername()))
+                .sharedDevice(deviceRepository.getDeviceEntityById(dto.getSharedDeviceId()))
+                .allowedUser(allowedUser)
+                .sharingDateFrom(new Date(dto.getDateFrom().getTime()))
+                .sharingDateTo(new Date(dto.getDateTo().getTime()))
+                .build();
+        sharedDeviceRepository.save(sharedDeviceEntity);
+        return true;
     }
 
     @Transactional
@@ -137,5 +153,9 @@ public class DeviceServiceImpl implements DeviceService {
         map.put("b", Integer.toString(dto.getBlue()));
         map.put("ip", ip);
         return map;
+    }
+
+    public Map getAllSharedDevices(){
+        return null;
     }
 }

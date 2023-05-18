@@ -27,20 +27,29 @@ public class DeviceController {
         return ResponseEntity.ok(service.switchDeviceState(Long.parseLong(deviceId), isOn));
     }
 
-    @RequestMapping(value = "/{deviceId}/state", method = RequestMethod.GET)
-    public ResponseEntity<?> getDeviceState(@PathVariable Long deviceId) { // get state of a device
-        return ResponseEntity.ok(service.getDeviceState(deviceId));
-    }
-
     @RequestMapping(value = "/{deviceId}/info", method = RequestMethod.GET)
     public ResponseEntity<?> getInformationAboutDevice(@PathVariable Long deviceId) { // get statistics for a Device
         return ResponseEntity.ok(service.getDeviceInformation(deviceId));
     }
 
-    @RequestMapping(value = "/access", method = RequestMethod.POST)
+    @RequestMapping(value = "/shared", method = RequestMethod.POST)
     public ResponseEntity<?> shareDeviceControl(@RequestBody DeviceSharingDTO dto) {
         return ResponseEntity.ok(service.shareDeviceControl(dto));
     }
+    @RequestMapping(value = "/shared", method = RequestMethod.GET)
+    public ResponseEntity<?> getAllSharedDevices() {
+        return ResponseEntity.ok(service.getAllSharedDevices());
+    }
+    @RequestMapping(value = "/shared", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateSharing(@RequestBody DeviceSharingDTO dto){
+        return ResponseEntity.ok();
+    }
+
+    @RequestMapping(value = "/shared/{shareId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteSharing(){
+        return ResponseEntity.ok();
+    }
+
 
     @RequestMapping(value = "/{deviceId}/color")
     public ResponseEntity<?> changeColor(@PathVariable Long deviceId, @RequestBody ChangeColorDTO dto) {
