@@ -40,15 +40,15 @@ public class DeviceController {
     public ResponseEntity<?> getAllSharedDevices() {
         return ResponseEntity.ok(service.getAllSharedDevices());
     }
-    @RequestMapping(value = "/shared", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateSharing(@RequestBody DeviceSharingDTO dto){
-        return ResponseEntity.ok();
-    }
-
-    @RequestMapping(value = "/shared/{shareId}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteSharing(){
-        return ResponseEntity.ok();
-    }
+//    @RequestMapping(value = "/shared", method = RequestMethod.PUT)
+//    public ResponseEntity<?> updateSharing(@RequestBody DeviceSharingDTO dto){
+//        return ResponseEntity.ok();
+//    }
+//
+//    @RequestMapping(value = "/shared/{shareId}", method = RequestMethod.DELETE)
+//    public ResponseEntity<?> deleteSharing(){
+//        return ResponseEntity.ok();
+//    }
 
 
     @RequestMapping(value = "/{deviceId}/color")
