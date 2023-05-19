@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -18,9 +19,15 @@ public class ActionDTO implements Serializable {
         return new ActionDTO("CHANGE_COLOR", colorsMap);
     }
 
-    public static ActionDTO updateData(Map<String,String> namesToIpsMap) {
+    public static ActionDTO updateData(Map<String, String> deviceIdToIpMap) {
 
-        return new ActionDTO("GET_STATE_ALL", namesToIpsMap);
+        return new ActionDTO("GET_STATE_ALL", deviceIdToIpMap);
     }
+
+//    public static ActionDTO updateData(Map<Long, String> deviceIdToIpMap) {
+//        //var ints = deviceIdToIpMap.keySet().stream().map(Object::toString).collect(Collectors.toList());
+//        //deviceIdToIpMap
+//        return new ActionDTO("GET_STATE_ALL", deviceIdToIpMap);
+//    }
 
 }

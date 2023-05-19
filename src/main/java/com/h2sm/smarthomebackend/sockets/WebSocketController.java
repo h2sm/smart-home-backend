@@ -28,7 +28,6 @@ public class WebSocketController {
 
     @MessageMapping("/resp")
     public void responseFromHub(Principal principal, @Payload ActionDTO actionDTO){
-        System.out.println(principal.getName());
         service.parseMessage(actionDTO);
     }
 

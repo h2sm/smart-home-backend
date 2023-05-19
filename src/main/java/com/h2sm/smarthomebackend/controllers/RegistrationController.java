@@ -4,14 +4,12 @@ import com.h2sm.smarthomebackend.service.impl.AuthServiceImpl;
 import com.h2sm.smarthomebackend.dtos.RegistrationDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/register")
 @AllArgsConstructor
+@CrossOrigin
 public class RegistrationController {
     private final AuthServiceImpl authService;
 

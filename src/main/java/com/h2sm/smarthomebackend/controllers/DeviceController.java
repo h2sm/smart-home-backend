@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/devices")
 @RequiredArgsConstructor
+@CrossOrigin
 public class DeviceController {
 
     private final DeviceServiceImpl service;

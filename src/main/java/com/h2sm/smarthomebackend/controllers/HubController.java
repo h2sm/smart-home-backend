@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/hub")
 @AllArgsConstructor
+@CrossOrigin
 public class HubController {
     private final HubServiceImpl hubService;
 

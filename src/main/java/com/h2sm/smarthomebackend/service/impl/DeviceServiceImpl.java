@@ -140,7 +140,7 @@ public class DeviceServiceImpl implements DeviceService {
         var listOfHubs = allDevicesList.stream().map(DeviceEntity::getConnectedHub).distinct().collect(Collectors.toList());
         listOfHubs.forEach(hub -> {
             var devicesWithThisHub = allDevicesList.stream().filter(deviceEntity -> deviceEntity.getConnectedHub().equals(hub)).collect(Collectors.toList());
-            socketConnectionService.sendMessageToHub(hub.getHubUuid(), ActionDTO.updateData(devicesWithThisHub.stream().collect(Collectors.toMap(DeviceEntity::getDeviceName, DeviceEntity::getLocalIpAddress))));
+            socketConnectionService.sendMessageToHub(hub.getHubUuid(), ActionDTO.updateData(devicesWithThisHub.stream().collect(Collectors.toMap(x->String.valueOf(x.getId()), DeviceEntity::getLocalIpAddress))));
         });
 
     }
