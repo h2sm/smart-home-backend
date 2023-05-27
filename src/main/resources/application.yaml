@@ -3,6 +3,7 @@ spring:
 #    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   jpa:
     database: postgresql
+    show-sql: false
   datasource:
     username: docker
     password: docker

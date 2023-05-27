@@ -9,16 +9,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin
 public class AuthController {
 
     private final AuthServiceImpl authService;
-
+    @CrossOrigin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<AuthenticatedUserDTO> login(@RequestBody AuthenticateUserDTO dto) {
         return ResponseEntity.ok(authService.doLogin(dto));
     }
-
+    @CrossOrigin
     @RequestMapping(value = "/hub", method = RequestMethod.POST)
     public ResponseEntity<AuthenticatedHubDTO> loginHub(@RequestBody AuthenticateHubDTO dto){
         return ResponseEntity.ok(authService.doLoginHub(dto));
